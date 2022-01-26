@@ -1,0 +1,36 @@
+
+
+@console.log() : consoleLog
+@.innerHTML
+@document.querySelector()
+@setTimeout()
+@document.createElement()
+@.appendChild()
+@Math.PI
+@location.href : locationHref
+@.addEventListener()
+
+this testy = 137
+
+fun printtesty() {
+	print(testy)
+}
+
+consoleLog("asd bluh bluh")
+print(PI)
+
+fun afterwait() {
+	this body = querySelector("body")
+	consoleLog(innerHTML(body))
+	this div = createElement("div")
+	innerHTML(div, "bluh bluh bluh")
+	addEventListener(div, "click", changeloc)
+	appendChild(body, div)
+}
+
+fun changeloc() {
+	locationHref = "https://en.wikipedia.org/"
+}
+
+setTimeout(afterwait, 1000)
+

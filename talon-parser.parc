@@ -1,0 +1,298 @@
+
+
+statements {
+	> closedstatement*
+}
+
+closedstatement => {
+	blockstatement > ;statementend?
+	linestatement > ;statementend
+}
+
+blockstatement => {
+	if
+	for
+	while
+	function
+}
+
+if {
+	"if" > "(" expression ")" codeblock {
+		"else" > {
+			codeblock
+			if
+		}
+	}?
+}
+
+for {
+	"for" > "(" name "in" expression ")" codeblock
+}
+
+while {
+	"while" > "(" expression ")" codeblock
+}
+
+function {
+	"fun" > name "(" params ")" codeblock
+}
+
+params {
+	> (name > ("," > name)*)?
+}
+
+linestatement => {
+	break
+	"ret" > expression? => return
+	"this" > name ("=" > expression)? => declare
+	name > {
+		"(" > args ")" => call
+		(assignop / :"=") > expression => assign
+		"[" > expression "]" (assignop / :"=") expression => listassign
+	}
+	"@" > (name > propref? / propref) (:"(" > ")")? (":" > name)? => extimport
+}
+
+propref {
+	proprefitem+
+}
+
+proprefitem => {
+	"." > name
+	"[" > (string / number) "]"
+}
+
+codeblock => {
+	"{" > statements "}"
+}
+
+expression => {
+	or
+}
+
+or {
+	and > (("||" > and)+ / =>)
+}
+
+and {
+	compare > (("&&" > compare)+ / =>)
+}
+
+compare => binop {
+	sum > ((compareop > sum)+ / =>)
+}
+
+sum => binop {
+	product > (((:"+" / :"-") > product)+ / =>)
+}
+
+product => binop {
+	exponent > ((productop > exponent)+ / =>)
+}
+
+exponent => binop {
+	range > (:"^" > exponent / =>)
+}
+
+range {
+	listref > ((to / upto) > listref / =>)
+}
+
+listref {
+	value > (("[" > listrefparam "]")+ / =>)
+}
+
+listrefparam => {
+	":" > empty expression? => slice
+	expression > (":" > expression? => slice)?
+}
+
+value => {
+	number
+	string
+	true
+	false
+	list
+	"-" > value => neg
+	"+" > value => abs
+	"!" > value => not
+	"(" > expression ")"
+	name > ("(" > args ")" => call)?
+}
+
+args {
+	> (expression > ("," > expression)*)?
+}
+
+list {
+	"[" > (expression > ("," > (expression / &"]"))*)? "]"
+}
+
+empty {>}
+
+
+
+
+
+====================
+
+
+
+
+
+tokens* {
+	> anyws? (tokenorgroup > ws?)*
+}
+
+curlygrouptokens* {
+	:"{" > tokens :"}"
+}
+
+othergrouptokens* {
+	:[\[(] > crosslinetokens :[\])]
+}
+
+crosslinetokens* {
+	> anyws? (tokenorgroup > anyws?)*
+}
+
+tokenorgroup* {
+	curlygrouptokens / othergrouptokens / token
+}
+
+ws* {
+	;linews > {
+		statementend > anyws?
+		(&"}" / !.) > emptyend
+	}?
+	statementend > anyws?
+	(&"}" / !.) > emptyend
+}
+
+emptyend => statementend {""}
+
+statementend {
+	[\n;]
+}
+
+linews {
+	([ \t\r] / comment)+
+}
+
+comment {
+	"//" > [^\n]*
+	"/*" > (!"*/" .)* "*/"
+}
+
+anyws* {
+	([ \t\r\n] / ;comment)+
+}
+
+token => {
+	string
+	specialsyntax
+	numorsign
+	symbol
+}
+
+specialsyntax => {
+	"||"
+	"&&"
+	assignop
+	compareop2
+	"="
+	compareop1
+	// sum operators are parsed along with numbers
+	productop
+	"^"
+	"!"
+	","
+	":"
+	"@"
+	"."
+}
+
+assignop {
+	"+="
+	"-="
+	"*="
+	"/="
+	"^="
+	"%="
+}
+
+compareop2 => compareop {
+	"=="
+	"!="
+	"<="
+	">="
+}
+
+compareop1 => compareop {
+	"<"
+	">"
+}
+
+productop {
+	"*"
+	"/"
+	"%"
+}
+
+numorsign => {
+	[+-] > {
+		digits => number
+	}?
+	digits => number
+}
+
+digits {
+	[0-9]+
+}
+
+symbol => {
+	word > (nametail => name)?
+	name
+}
+
+word => {
+	"this"
+	"if"
+	"else"
+	"true"
+	"false"
+	"on"
+	"off"
+	"yes"
+	"no"
+	"for"
+	"in"
+	"while"
+	"to"
+	"upto"
+	"fun"
+	"ret"
+	"break"
+}
+
+name {
+	[a-zA-Z_] > nametail?
+}
+
+nametail {
+	[a-zA-Z0-9_]+
+}
+
+string {
+	"\"" > dstritem* "\""
+	"'" > sstritem* "'"
+}
+
+dstritem {
+	"\\" > . / [^"]
+}
+
+sstritem {
+	"\\" > . / [^']
+}
+

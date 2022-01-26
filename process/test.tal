@@ -1,0 +1,7 @@
+
+
+@console.log() : clog
+@Blob()
+
+clog(Blob(["asd bluh"]))
+

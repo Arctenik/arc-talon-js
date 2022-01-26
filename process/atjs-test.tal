@@ -1,0 +1,26 @@
+
+
+import("talon-parser.tal")
+import("atjs.tal")
+
+
+fun readlines() {
+	this result = ""
+	this line = getstr("")
+	while (line != "END") {
+		if (result) {
+			result += "\n"
+		}
+		result += line
+		line = getstr("")
+	}
+	ret result
+}
+
+this compiled = atjs_compile([["test.tal", readlines(), true]], "talon")
+if (compiled[1]) {
+	print(compiled[1])
+} else {
+	print(compiled[0])
+}
+

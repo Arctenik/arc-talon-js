@@ -1,0 +1,200 @@
+
+
+@document.getElementById()
+@.innerHTML
+@.textContent
+@.setAttribute()
+@document.createElement()
+@.appendChild()
+
+@.classList.add() : addClass
+@.classList.remove() : removeClass
+
+@.addEventListener()
+@MouseEvent()
+@.dispatchEvent()
+@.preventDefault()
+@.key : getKey
+
+@.value : elemValue
+@.files : getFiles
+@.name : getName
+@.disabled : setDisabled
+@.selectionStart
+@.selectionEnd
+@.setRangeText()
+
+@Array.from() : arrayFrom
+@.text() : readText
+@.then() : handlePromise
+@Blob()
+@URL.createObjectURL()
+@URL.revokeObjectURL()
+@setTimeout()
+@Object.fromEntries() : objectFromEntries
+
+import("talon-parser.tal")
+import("atjs.tal")
+
+this fileInp = getElementById("fileInp")
+this codeInp = getElementById("codeInp")
+this initFileInp = getElementById("initFileInp")
+this interopVarInp = getElementById("interopVarInp")
+this compileButton = getElementById("compileButton")
+this compileRunButton = getElementById("compileRunButton")
+this compileMessageContainer = getElementById("compileMessageContainer")
+this compileMessageElem = getElementById("compileMessageElem")
+this iframe = getElementById("iframe")
+
+this builtinfileopts = [["//auto", "Auto"], ["//", "None"], ["//text", "Text input"]]
+
+this files = []
+this compiletype
+this filesdata
+this fi
+this initname
+this url
+
+
+fun updatefilelist() {
+	files = arrayFrom(getFiles(fileInp))
+	
+	this currentval = elemValue(initFileInp)
+	innerHTML(initFileInp, "")
+	
+	this opt
+	
+	this optinfo
+	for (optinfo in builtinfileopts) {
+		opt = createElement("option")
+		elemValue(opt, optinfo[0])
+		textContent(opt, optinfo[1])
+		appendChild(initFileInp, opt)
+	}
+	
+	this file
+	for (file in files) {
+		opt = createElement("option")
+		elemValue(opt, getName(file))
+		textContent(opt, getName(file))
+		appendChild(initFileInp, opt)
+	}
+	
+	elemValue(initFileInp, currentval)
+}
+
+fun handlecodekey(e) {
+	if (getKey(e) == "Tab") {
+		preventDefault(e)
+		setRangeText(codeInp, "\t", selectionStart(codeInp), selectionEnd(codeInp), "end")
+	}
+}
+
+fun startdlcompile() {
+	compiletype = "dl"
+	initcompile()
+	setTimeout(startcompile, 1)
+}
+
+fun startruncompile() {
+	compiletype = "run"
+	initcompile()
+	setTimeout(startcompile, 1)
+}
+
+fun initcompile() {
+	setDisabled(compileButton, true)
+	setDisabled(compileRunButton, true)
+	textContent(compileMessageElem, "Compiling....")
+	removeClass(compileMessageElem, "error")
+	removeClass(compileMessageContainer, "hidden")
+}
+
+fun startcompile() {
+	filesdata = []
+	fi = 0
+	initname = ""
+	if (len(files)) {
+		handlePromise(readText(files[fi]), readfilesnext)
+	} else {
+		finishcompile()
+	}
+}
+
+fun readfilesnext(text) {
+	this name = getName(files[fi])
+	this data = [name, text]
+	if (name == elemValue(initFileInp) || (fi == 0 && elemValue(initFileInp) == "//auto" && !elemValue(codeInp))) {
+		append(data, true)
+		initname = name
+	}
+	append(filesdata, data)
+	fi += 1
+	if (fi < len(files)) {
+		handlePromise(readText(files[fi]), readfilesnext)
+	} else {
+		finishcompile()
+	}
+}
+
+fun finishcompile() {
+	if (elemValue(codeInp)) {
+		this textdata = ["//text", elemValue(codeInp)]
+		if (elemValue(initFileInp) == "//text" || elemValue(initFileInp) == "//auto") {
+			append(textdata, true)
+		}
+		append(filesdata, textdata)
+	}
+	
+	this result = atjs_compile(filesdata, elemValue(interopVarInp))
+	
+	if (result[1]) {
+		textContent(compileMessageElem, str(result[1]))
+		addClass(compileMessageElem, "error")
+	} else {
+		if (compiletype == "run") {
+			revokeObjectURL(url)
+			url = createObjectURL(Blob([result[0]]))
+			setAttribute(iframe, "srcdoc", '<script src="' + url + '"></script>')
+		} else {
+			this name = initname
+			if (!name && len(files) == 1) {
+				name = getName(files[0])
+			}
+			if (name) {
+				if (endswith(lower(name), ".tal")) {
+					name = name[:-4]
+				}
+				if (len(filesdata) > 1) {
+					name += "_bundle"
+				}
+				name += ".js"
+			} else {
+				name = "compiled.js"
+			}
+			downloadtext(result[0], name)
+		}
+		addClass(compileMessageContainer, "hidden")
+	}
+	
+	setDisabled(compileButton, false)
+	setDisabled(compileRunButton, false)
+}
+
+fun downloadtext(text, name) {
+	revokeObjectURL(url)
+	url = createObjectURL(Blob([text], objectFromEntries([["type", "application/javascript"]])))
+	this a = createElement("a")
+	setAttribute(a, "href", url)
+	setAttribute(a, "download", name)
+	dispatchEvent(a, MouseEvent("click"))
+}
+
+
+addEventListener(fileInp, "change", updatefilelist)
+
+addEventListener(codeInp, "keydown", handlecodekey)
+
+addEventListener(compileButton, "click", startdlcompile)
+addEventListener(compileRunButton, "click", startruncompile)
+

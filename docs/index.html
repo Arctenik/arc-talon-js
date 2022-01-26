@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		
+		<style>
+
+		body {
+			font-family: Arial, sans-serif;
+			max-width: 50em;
+			margin: 4em auto;
+		}
+
+		.hidden {
+			display: none;
+		}
+
+		.error {
+			color: #e00;
+		}
+
+		#codeInp {
+			width: 40em;
+			max-width: 100%;
+			height: 10em;
+			tab-size: 4;
+		}
+
+		</style>
+	</head>
+	<body>
+		
+		See <a href="https://github.com/Arctenik/arc-talon-js">the repository</a> for more information.
+		<br><br>
+		To see the compiler in action, you can try pasting the content of a <a href="https://github.com/MystPi/talon/tree/351b0ed0662a3106a97182095a8707db1777b843/examples">Talon example file</a> into the text box and clicking "Compile and run". (You'll need to have your browser's JavaScript console open in order to see the output.)
+		<br><br>
+		The "Initial file" dropdown allows you to choose which file (if any) will be automatically run by the compiled script (any others will need to be imported or initiated externally). "Auto" means that the text input will run if it has content, and otherwise the first file from the file input will be run.
+		<br><br><br>
+		Talon source files: <input type="file" id="fileInp" multiple>
+		<br><br>
+		And/or source code text input:<br>
+		<textarea id="codeInp" spellcheck="false"></textarea>
+		<br><br><br>
+		Initial file:
+		<select id="initFileInp">
+			<option value="//auto">Auto</option>
+			<option value="//">None</option>
+			<option value="//text">Text input</option>
+		</select>
+		<br><br>
+		Interop variable: <input type="text" id="interopVarInp" value="talon">
+		<br><br><br>
+		<button id="compileButton">Compile and download</button> |
+		<button id="compileRunButton">Compile and run</button>
+		<span id="compileMessageContainer" class="hidden">| <span id="compileMessageElem"></span></span>
+
+		<iframe id="iframe" class="hidden"></iframe>
+
+
+		<script src="compile_bundle.js"></script>
+		
+	</body>
+</html>

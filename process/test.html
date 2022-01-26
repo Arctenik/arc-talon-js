@@ -1,0 +1,21 @@
+
+
+asd
+<br><br>
+<textarea></textarea>
+
+
+<script src="talon-parser_temp.js"></script>
+<script>
+let inp = document.querySelector("textarea")
+function parseAtjsArrs(text) {
+	return [f(parseAtjs(text)), false];
+	
+	function f(expr) {
+		return [expr.type, Array.isArray(expr.value) ? expr.value.map(f) : expr.value, expr.index]
+	}
+}
+</script>
+<script src="atjs.js"></script>
+<script src="test.js"></script>
+

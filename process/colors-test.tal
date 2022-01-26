@@ -1,0 +1,20 @@
+
+printc("foreground\n")
+
+printc("[black]black[/] [red]red[/] [green]green[/] [yellow]yellow[/] [blue]blue[/] [magenta]magenta[/] [cyan]cyan[/] [lightgray]lgray[/]")
+printc("[darkgray]dgray[/] [lightred]lred[/] [lightgreen]lgreen[/] [lightyellow]lyellow[/] [lightblue]lblue[/] [lightmagenta]lmagenta[/] [lightcyan]lcyan[/] [white]white[/]")
+
+printc("[dim]dim[/dim]")
+printc("[dim][black]black[/] [red]red[/] [green]green[/] [yellow]yellow[/] [blue]blue[/] [magenta]magenta[/] [cyan]cyan[/] [lightgray]lgray[/][/]")
+printc("[dim][darkgray]dgray[/] [lightred]lred[/] [lightgreen]lgreen[/] [lightyellow]lyellow[/] [lightblue]lblue[/] [lightmagenta]lmagenta[/] [lightcyan]lcyan[/] [white]white[/][/]")
+
+
+printc("\n[reverse]background[/]\n")
+
+printc("[reverse][black]black[/] [red]red[/] [green]green[/] [yellow]yellow[/] [blue]blue[/] [magenta]magenta[/] [cyan]cyan[/] [lightgray]lgray[/][/]")
+printc("[reverse][darkgray]dgray[/] [lightred]lred[/] [lightgreen]lgreen[/] [lightyellow]lyellow[/] [lightblue]lblue[/] [lightmagenta]lmagenta[/] [lightcyan]lcyan[/] [white]white[/][/]")
+
+printc("[reverse][dim]dim[/dim][/]")
+printc("[reverse][dim][black]black[/] [red]red[/] [green]green[/] [yellow]yellow[/] [blue]blue[/] [magenta]magenta[/] [cyan]cyan[/] [lightgray]lgray[/][/][/]")
+printc("[reverse][dim][darkgray]dgray[/] [lightred]lred[/] [lightgreen]lgreen[/] [lightyellow]lyellow[/] [lightblue]lblue[/] [lightmagenta]lmagenta[/] [lightcyan]lcyan[/] [white]white[/][/][/]")
+
